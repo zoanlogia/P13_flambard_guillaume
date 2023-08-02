@@ -1,34 +1,34 @@
+// SignIn/SignIn.jsx
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
-// import fetchUserData from "../../tools/FetchApi.js";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux"; // Importez useDispatch
+import { loginUser } from "../../features/auth/authSlice.js";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
-  const [users, setUsers] = useState([])
-
+  const [email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userName, setUserName] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const status = useSelector((state) => state.auth.status);
 
-
-  const fetchUser = () => {
-    fetch("http://localhost:3001/api/v1/user/signup")
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        setUsers(data)
-      })
-  }
   useEffect(() => {
-    fetchUser()
-  }, [])
+    
+    if (status === "succeeded") {
+      navigate("/profile");
+    } else if (status === "failed") {
+      console.log("error");
+    }
+  }, [status, navigate]);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-  };
+    dispatch(loginUser({ email, password }));
+  }
 
   return (
     <>
@@ -37,17 +37,25 @@ const SignIn = () => {
         <section className="sign-in-content">
           <FontAwesomeIcon icon={faUserCircle} className={`sign-in-icon`} />
           <h1>Sign In</h1>
-          {users.map(user => (
-            <li key={user.id}>{user.name}</li>
-          ))}
+
           <form onSubmit={handleSubmit}>
             <div className="input-wrapper">
               <label htmlFor="username">Username</label>
-              <input value={userName} type="text" id="username" onChange={(e) => setUserName(e.target.value)}/>
+              <input
+                value={email}
+                type="email"
+                id="username"
+                onChange={(e) => setUserEmail(e.target.value)}
+              />
             </div>
             <div className="input-wrapper">
               <label htmlFor="password">Password</label>
-              <input value={password} type="password" id="password" onChange={(e) => setPassword(e.target.value)}/>
+              <input
+                value={password}
+                type="password"
+                id="password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <div className="input-remember">
               <input type="checkbox" id="remember-me" />

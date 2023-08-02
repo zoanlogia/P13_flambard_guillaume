@@ -1,11 +1,15 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import Router from "./Router/Router.jsx";
+import { Provider } from "react-redux";
+import store from "./store/store.js";
+// Assurez-vous que c'est le bon chemin
 
-import './index.css'
-import Router from './Router/Router.jsx'
-
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Router />
-  </React.StrictMode>,
-)
+    <Provider store={store}>
+      <Router />
+    </Provider>
+  </React.StrictMode>
+);

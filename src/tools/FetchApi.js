@@ -1,33 +1,64 @@
-const fetchUserData = async (userData) => {
-  const url = 'http://localhost:3001/api/v1/user/signup';
+const urlAPI = "http://localhost:3001/api/v1"
+
+export const login = async (email, password) => {
+    // on construit l'url
+    const endpoint = "/user/login";
+    const url = urlAPI + endpoint;
+
+    // options du fetch
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email, password}),
+    };
   
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(userData),
-  };
-
   try {
-    const response = await fetch(url, options);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+      const response = await fetch(url, options)
+      if (!response.ok) throw new Error ('fetch pas OK')
 
-    const data = await response.json();
-    
-    const parsedData = JSON.parse(data.data);
+      const data = await response.json()
 
-    console.log(parsedData);
-    // handle your data here
+      if (!data || !data.body || data.status !== 200) throw new Error (data.status.message)
 
-    return parsedData;
+
+      return data // Return whole response data instead of just the token
+      
   } catch (error) {
-    console.error('Error:', error);
-    // handle your error here
+      console.log(error)
+      return {error: error.toString()}
   }
 }
 
-export default fetchUserData;
+export const getProfile = async (token) => {
+  // on construit l'url
+  const endpoint = "/user/profile";
+  const url = urlAPI + endpoint;
+
+  // options du fetch
+  const options = {
+    method: 'GET', // devrait être un GET mais bon...
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  try {
+    const response = await fetch(url, options)
+    if (!response.ok) throw new Error ('fetch pas OK')
+    
+    const data = await response.json()
+
+    return data
+      
+  } catch (error) {
+      console.log(error)
+      throw error
+  }
+}
+
+// export const deleteUser () {
+
+// }
