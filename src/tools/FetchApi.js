@@ -38,23 +38,24 @@ export const getProfile = async (token) => {
 
   // options du fetch
   const options = {
-    method: 'GET', // devrait être un GET mais bon...
+    method: 'POST', // devrait être un GET mais bon...
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
   };
-
+  
   try {
     const response = await fetch(url, options)
     if (!response.ok) throw new Error ('fetch pas OK')
     
     const data = await response.json()
+    console.log(data);
 
     return data
       
   } catch (error) {
-      console.log(error)
+      console.error(error)
       throw error
   }
 }

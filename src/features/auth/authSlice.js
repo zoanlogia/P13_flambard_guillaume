@@ -10,16 +10,17 @@ export const loginUser = createAsyncThunk(
 );
 
 export const fetchProfile = createAsyncThunk(
-    "auth/fetchProfile",
-    async (token, { rejectWithValue }) => {
-      try {
-        const response = await getProfile(token);
-        return response.body;
-      } catch (error) {
-        return rejectWithValue(error.message);
-      }
+  "auth/fetchProfile",
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await getProfile(token);
+      console.log(response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
-  );
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -38,7 +39,8 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.token = action.payload.token
+        state.token = action.payload.token;
+        state.user = action.payload.user;
         state.status = "succeeded";
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -46,10 +48,11 @@ const authSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.user = action.payload; // action.payload est la réponse de l'API qui est l'objet du profil utilisateur
+        state.token = action.payload.token;
         state.status = "succeeded";
+        state.user = action.payload.user;
       })
-      
+
       .addCase(fetchProfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;

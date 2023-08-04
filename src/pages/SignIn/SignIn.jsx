@@ -16,18 +16,19 @@ const SignIn = () => {
   const navigate = useNavigate();
   const status = useSelector((state) => state.auth.status);
 
+
   useEffect(() => {
-    
     if (status === "succeeded") {
       navigate("/profile");
-    } else if (status === "failed") {
+    } else {
       console.log("error");
     }
-  }, [status, navigate]);
+  }, [status, dispatch, navigate, email, password]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     dispatch(loginUser({ email, password }));
+    
   }
 
   return (

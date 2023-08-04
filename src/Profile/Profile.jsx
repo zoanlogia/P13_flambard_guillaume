@@ -1,12 +1,10 @@
-
-import { useSelector } from "react-redux";
 import Footer from "../components/Footer/Footer.jsx";
 import Navbar from "../components/Navbar/Navbar.jsx";
 
-const Profile = () => {
-  const user = useSelector((state) => state.auth.user);
 
-  console.log(user);
+const Profile = () => {
+  
+
   return (
     <>
       <Navbar />
@@ -15,8 +13,8 @@ const Profile = () => {
           <h1>
             Welcome back
             <br />
-            ! {user ? `${user.firstName} ${user.lastName}` : ""}
-
+            
+            
           </h1>
           <button className="edit-button">Edit Name</button>
         </div>
