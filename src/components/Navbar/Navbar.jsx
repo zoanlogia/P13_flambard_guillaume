@@ -4,24 +4,10 @@ import { faUserCircle, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice.js";
-import { useEffect, useState } from "react";
-import { getProfile } from "../../tools/FetchApi.js";
 
 const Navbar = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-
-  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    getProfile(token)
-      .then((data) => {
-        const { firstName, lastName } = data.body;
-        setFirstName(firstName);
-        setLastName(lastName);
-      })
-  }, [token]);
 
   const handleSignOut = () => {
     dispatch(logout());
@@ -38,11 +24,11 @@ const Navbar = () => {
         <h1 className="sr-only">Argent Bank</h1>
       </Link>
       <div>
-        {firstName ? (
+        {user ? (
           <>
             <Link className="main-nav-item" to={`/profile`}>
               <FontAwesomeIcon icon={faUserCircle} />
-              {firstName} {lastName}
+              {user.firstName} {user.lastName}
             </Link>
             <Link className="main-nav-item" onClick={handleSignOut} to={`/`}>
               <FontAwesomeIcon icon={faSignOutAlt} />
@@ -57,7 +43,7 @@ const Navbar = () => {
         )}
       </div>
     </nav>
-  )
+  );
 }
 
 export default Navbar;
