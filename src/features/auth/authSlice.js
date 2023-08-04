@@ -7,6 +7,10 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }) => {
     const response = await login(email, password);
     if (response.error) throw new Error(response.error);
+    
+    // Store the token in localStorage upon successful login
+    localStorage.setItem('token', response.body.token);
+
     return response; // Return whole response data instead of just the token
   }
 );
@@ -25,6 +29,8 @@ export const fetchUserProfile = createAsyncThunk(
       const response = await getProfile(token);
       return response; // Return whole response data
     } catch (err) {
+      // If an error occurs (like the token has expired), remove the token from localStorage
+      localStorage.removeItem('token');
       return rejectWithValue(err.response.data);
     }
   }
@@ -39,6 +45,9 @@ const authSlice = createSlice({
   },
   reducers: {
     logout: (state) => {
+      // Remove the token from localStorage when logging out
+      localStorage.removeItem('token');
+
       state.user = null;
       state.status = "idle";
       state.error = null;

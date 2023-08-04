@@ -66,7 +66,3 @@ export const getProfile = async () => {
       throw error
   }
 }
-
-// export const deleteUser () {
-
-// }
