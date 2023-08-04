@@ -13,9 +13,20 @@ export const loginUser = createAsyncThunk(
 
 export const fetchUserProfile = createAsyncThunk(
   "auth/fetchUserProfile",
-  async (token) => {
-    const response = await getProfile(token);
-    return response; // Return whole response data
+  async (_, { rejectWithValue }) => {
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return rejectWithValue('No token found');
+    }
+
+    try {
+      const response = await getProfile(token);
+      return response; // Return whole response data
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
   }
 );
 

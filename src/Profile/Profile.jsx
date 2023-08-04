@@ -1,9 +1,23 @@
 import Footer from "../components/Footer/Footer.jsx";
 import Navbar from "../components/Navbar/Navbar.jsx";
-
+import { useEffect, useState } from "react";
+import { getProfile } from "../tools/FetchApi.js";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const token = useSelector((state) => state.auth.token);
+
+useEffect(() => {
+    getProfile(token)
+      .then((data) => {
+        const { firstName, lastName } = data.body;
+        setFirstName(firstName);
+        setLastName(lastName);
+      })
+  }, [token]);
 
   return (
     <>
@@ -13,8 +27,7 @@ const Profile = () => {
           <h1>
             Welcome back
             <br />
-            
-            
+            {firstName} {lastName}
           </h1>
           <button className="edit-button">Edit Name</button>
         </div>

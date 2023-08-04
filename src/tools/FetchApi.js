@@ -22,6 +22,11 @@ export const login = async (email, password) => {
 
       if (!data || !data.body || data.status !== 200) throw new Error (data.status.message)
 
+      if (data && data.body && data.status === 200) {
+        // Save token to localStorage
+        localStorage.setItem('token', data.body.token)
+      }
+
 
       return data // Return whole response data instead of just the token
       
@@ -31,7 +36,9 @@ export const login = async (email, password) => {
   }
 }
 
-export const getProfile = async (token) => {
+export const getProfile = async () => {
+  const token = localStorage.getItem('token')
+
   // on construit l'url
   const endpoint = "/user/profile";
   const url = urlAPI + endpoint;
