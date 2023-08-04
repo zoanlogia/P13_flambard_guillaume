@@ -1,24 +1,21 @@
 // features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { login as loginAPI, getProfile } from "../../tools/FetchApi.js";
+import { login, getProfile } from "../../tools/FetchApi.js";
+
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }) => {
-    const response = await loginAPI(email, password);
-    return response;
+    const response = await login(email, password);
+    if (response.error) throw new Error(response.error);
+    return response; // Return whole response data instead of just the token
   }
 );
 
-export const fetchProfile = createAsyncThunk(
-  "auth/fetchProfile",
-  async (token, { rejectWithValue }) => {
-    try {
-      const response = await getProfile(token);
-      console.log(response);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
+export const fetchUserProfile = createAsyncThunk(
+  "auth/fetchUserProfile",
+  async (token) => {
+    const response = await getProfile(token);
+    return response; // Return whole response data
   }
 );
 
@@ -26,20 +23,19 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: null,
-    token: null,
     status: "idle",
     error: null,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.token = null;
+      state.status = "idle";
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.token = action.payload.token;
         state.user = action.payload.user;
         state.status = "succeeded";
       })
@@ -47,13 +43,11 @@ const authSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.token = action.payload.token;
-        state.status = "succeeded";
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.status = "succeeded";
       })
-
-      .addCase(fetchProfile.rejected, (state, action) => {
+      .addCase(fetchUserProfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });

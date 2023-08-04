@@ -4,32 +4,41 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux"; // Importez useDispatch
-import { loginUser } from "../../features/auth/authSlice.js";
+import {  useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserProfile, loginUser } from "../../features/auth/authSlice.js";
 import { useNavigate } from "react-router-dom";
+
+
 
 const SignIn = () => {
   const [email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const status = useSelector((state) => state.auth.status);
+const navigate = useNavigate();
 
+const status = useSelector((state) => state.auth.status);
+const token = useSelector((state) => state.auth.token);
 
-  useEffect(() => {
-    if (status === "succeeded") {
-      navigate("/profile");
-    } else {
-      console.log("error");
-    }
-  }, [status, dispatch, navigate, email, password]);
+const handleSubmit = (event) => {
+  event.preventDefault();
+  dispatch(loginUser({ email, password }));
+}
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    dispatch(loginUser({ email, password }));
-    
+useEffect(() => {
+  if (status === "succeeded") {
+    dispatch(fetchUserProfile(token));
   }
+}, [status, dispatch, token]);
+
+// Redirect the user to profile page once user profile is loaded
+useEffect(() => {
+  if (status === "succeeded") {
+    navigate("/profile");
+  }
+}, [status, navigate]);
+
 
   return (
     <>
