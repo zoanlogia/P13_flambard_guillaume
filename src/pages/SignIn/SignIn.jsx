@@ -5,7 +5,7 @@ import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux"; // Importez useDispatch
+import { useDispatch } from "react-redux"; // Importez useDispatch
 import { useNavigate } from "react-router-dom";
 import { loginAPI} from "../../tools/FetchApi.js";
 import { createLogin, login } from "../../features/auth/authSlice.js";
@@ -36,7 +36,6 @@ const SignIn = () => {
       console.error(result.error);
     }
 }
-
 
   return (
     <>
