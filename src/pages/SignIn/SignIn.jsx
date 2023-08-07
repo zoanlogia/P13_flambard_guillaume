@@ -6,30 +6,37 @@ import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Importez useDispatch
-import { loginUser } from "../../features/auth/authSlice.js";
 import { useNavigate } from "react-router-dom";
+import { loginAPI} from "../../tools/FetchApi.js";
+import { createLogin, login } from "../../features/auth/authSlice.js";
 
 const SignIn = () => {
   const [email, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const status = useSelector((state) => state.auth.status);
+  const [token, setToken] = useState(null);
 
 
   useEffect(() => {
-    if (status === "succeeded") {
+    if (token) {
+      dispatch(login({email, password, token}));
+      navigate("/profile");
+    }
+  }, [token, dispatch, navigate, email, password]);
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const result = await loginAPI(email, password);
+    if (result) {
+      const token = result;
+      dispatch(createLogin(email, password, token));
       navigate("/profile");
     } else {
-      console.log("error");
+      console.error(result.error);
     }
-  }, [status, dispatch, navigate, email, password]);
+}
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    dispatch(loginUser({ email, password }));
-    
-  }
 
   return (
     <>

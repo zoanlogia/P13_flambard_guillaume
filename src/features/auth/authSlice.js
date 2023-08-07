@@ -1,65 +1,44 @@
-// features/auth/authSlice.js
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { login as loginAPI, getProfile } from "../../tools/FetchApi.js";
-export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async ({ email, password }) => {
-    const response = await loginAPI(email, password);
-    return response;
-  }
-);
+import { createSlice } from "@reduxjs/toolkit";
 
-export const fetchProfile = createAsyncThunk(
-  "auth/fetchProfile",
-  async (token, { rejectWithValue }) => {
-    try {
-      const response = await getProfile(token);
-      console.log(response);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
+// authSlice.js
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    token: null,
-    status: "idle",
-    error: null,
-  },
-  reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
+    user: {
+      email: null,
+      password: null,
+      token: null,
+      isLogged: false,
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.token = action.payload.token;
-        state.user = action.payload.user;
-        state.status = "succeeded";
-      })
-      .addCase(loginUser.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      })
-      .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.token = action.payload.token;
-        state.status = "succeeded";
-        state.user = action.payload.user;
-      })
-
-      .addCase(fetchProfile.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      });
+  reducers: {
+    login: (state, action) => {
+      state.user = {
+        ...action.payload,
+        isLogged: true,
+      };
+    },
+    logout: (state) => {
+      state.user = {
+        email: null,
+        password: null,
+        token: null,
+        isLogged: false,
+      };
+    },
   },
 });
 
-export const { logout } = authSlice.actions;
+export const createLogin = (email, password) => {
+  return {
+    type: "auth/login",
+    payload: {
+      email: email,
+      password: password,
+    },
+  }
+}
+
+export const { login, logout } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -1,6 +1,6 @@
 const urlAPI = "http://localhost:3001/api/v1"
 
-export const login = async (email, password) => {
+export const loginAPI = async (email, password) => {
     // on construit l'url
     const endpoint = "/user/login";
     const url = urlAPI + endpoint;
