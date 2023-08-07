@@ -7,39 +7,62 @@ import Footer from "../../components/Footer/Footer.jsx";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux"; // Importez useDispatch
 import { useNavigate } from "react-router-dom";
-import { loginAPI} from "../../tools/FetchApi.js";
-import { createLogin, login } from "../../features/auth/authSlice.js";
+import {   setCredentials } from "../../features/auth/authSlice.js";
+import { useRef } from "react";
+import { useLoginMutation } from "../../features/auth/authApiSlice.js";
 
 const SignIn = () => {
-  const [email, setUserEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [token, setToken] = useState(null);
+  
+  const userRef = useRef()
+  
+  const [errMsg, setErrMsg] = useState('')
+
+  const [login, { isLoading }] = useLoginMutation()
 
 
   useEffect(() => {
-    if (token) {
-      dispatch(login({email, password, token}));
-      navigate("/profile");
-    }
-  }, [token, dispatch, navigate, email, password]);
-  
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const result = await loginAPI(email, password);
-    if (result) {
-      const token = result;
-      dispatch(createLogin(email, password, token));
-      navigate("/profile");
-    } else {
-      console.error(result.error);
+    userRef.current.focus()
+}, [])
+
+useEffect(() => {
+    setErrMsg('')
+}, [email, password])
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+
+    try {
+        const userData = await login({ email, password }).unwrap()
+        dispatch(setCredentials({ ...userData, email }))
+        setEmail('')
+        setPassword('')
+        navigate('/profile')
+    } catch (err) {
+        if (!err?.originalStatus) {
+            // isLoading: true until timeout occurs
+            setErrMsg('No Server Response');
+        } else if (err.originalStatus === 400) {
+            setErrMsg('Missing Username or Password');
+        } else if (err.originalStatus === 401) {
+            setErrMsg('Unauthorized');
+        } else {
+            setErrMsg('Login Failed');
+        }
     }
 }
+
 
   return (
     <>
       <Navbar />
+      {errMsg && <div className="error-message" >{errMsg}</div>}
+      {isLoading && <div className="loading-message">Loading...</div>}
       <main className="main bg-dark">
         <section className="sign-in-content">
           <FontAwesomeIcon icon={faUserCircle} className={`sign-in-icon`} />
@@ -52,7 +75,8 @@ const SignIn = () => {
                 value={email}
                 type="email"
                 id="username"
-                onChange={(e) => setUserEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
+                ref={userRef}
               />
             </div>
             <div className="input-wrapper">

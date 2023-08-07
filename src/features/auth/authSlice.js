@@ -1,64 +1,32 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit"
 
-// authSlice.js
 const authSlice = createSlice({
-  name: "auth",
-  initialState: {
-    user: {
-      email: null,
-      password: null,
-      token: localStorage.getItem("token"),
-
-      firstName: null,
-      lastName: null,
-      isLogged: false,
+    name: 'auth',
+    initialState: { 
+        user: {
+            email: null, 
+            password: null, 
+            token: null 
+        }
     },
-  },
-  reducers: {
-    login: (state, action) => {
-      state.user = {
-        ...state.user,
-        ...action.payload,
-        isLogged: true,
-      };
+    reducers: {
+        setCredentials: (state, action) => {
+            const { email, password, token } = action.payload
+            state.user.email = email
+            state.user.password = password
+            state.user.token = token
+        },
+        logOut: (state, action) => {
+            state.user.email = null
+            state.user.password = null
+            state.user.token = null
+        }
     },
-    updateUserProfile: (state, action) => {
-      state.user = {
-        ...state.user,
-        ...action.payload,
-        isLogged: true,
-      };
-    },
-    logout: (state) => {
-      state.user = {
-        email: null,
-        password: null,
-        token: null,
-        firstName: null,
-        lastName: null,
-        isLogged: false,
-      };
-    },
-  },
-});
+})
 
-export const createLogin = (email, password) => {
-  return {
-    type: "auth/login",
-    payload: {
-      email: email,
-      password: password,
-    },
-  };
-};
+export const { setCredentials, logOut } = authSlice.actions
 
-export const updateUserProfile = (profile) => {
-  return {
-    type: "auth/updateUserProfile",
-    payload: profile,
-  };
-};
+export default authSlice.reducer
 
-export const { login, logout } = authSlice.actions;
-
-export default authSlice.reducer;
+export const selectCurrentUser = (state) => state.auth.user
+export const selectCurrentToken = (state) => state.auth.user.token

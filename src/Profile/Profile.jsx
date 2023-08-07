@@ -1,27 +1,15 @@
-import { useDispatch, useSelector } from "react-redux";
+
+import { useSelector } from "react-redux";
 import Footer from "../components/Footer/Footer.jsx";
 import Navbar from "../components/Navbar/Navbar.jsx";
-import { useEffect } from "react";
-import { getProfile } from "../tools/FetchApi.js";
-import { updateUserProfile } from "../features/auth/authSlice.js";
+
 
 
 const Profile = () => {
   
-  const dispatch = useDispatch();
-  const { token } = useSelector((state) => state.auth.user);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const result = await getProfile(token);
-      if (result) {
-        dispatch(updateUserProfile(result));
-      }
-    };
-    fetchProfile();
-  }, [dispatch, token]);
-
   const { firstName, lastName } = useSelector((state) => state.auth.user);
+  const fullName = `${firstName} ${lastName}`;
+  console.log(fullName);
 
   return (
     <>
