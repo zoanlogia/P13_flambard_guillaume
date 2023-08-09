@@ -7,7 +7,7 @@ import Footer from "../../components/Footer/Footer.jsx";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux"; // Importez useDispatch
 import { useNavigate } from "react-router-dom";
-import {   setCredentials } from "../../features/auth/authSlice.js";
+import { setCredentials } from "../../features/auth/authSlice.js";
 import { useRef } from "react";
 import { useLoginMutation } from "../../features/auth/authApiSlice.js";
 
@@ -16,52 +16,60 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const userRef = useRef()
-  
-  const [errMsg, setErrMsg] = useState('')
 
-  const [login, { isLoading }] = useLoginMutation()
+  const userRef = useRef();
 
+  const [errMsg, setErrMsg] = useState("");
+
+  const [login, { isLoading }] = useLoginMutation();
 
   useEffect(() => {
-    userRef.current.focus()
-}, [])
+    userRef.current.focus();
+  }, []);
 
-useEffect(() => {
-    setErrMsg('')
-}, [email, password])
-
+  useEffect(() => {
+    setErrMsg("");
+  }, [email, password]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+  e.preventDefault();
+  console.log("handleSubmit called");
 
-
-    try {
-        const userData = await login({ email, password }).unwrap()
-        dispatch(setCredentials({ ...userData, email }))
-        setEmail('')
-        setPassword('')
-        navigate('/profile')
-    } catch (err) {
-        if (!err?.originalStatus) {
-            // isLoading: true until timeout occurs
-            setErrMsg('No Server Response');
-        } else if (err.originalStatus === 400) {
-            setErrMsg('Missing Username or Password');
-        } else if (err.originalStatus === 401) {
-            setErrMsg('Unauthorized');
-        } else {
-            setErrMsg('Login Failed');
-        }
+  try {
+    const userData = await login({ email, password }).unwrap();
+    dispatch(setCredentials({ ...userData, email }));
+    setEmail("");
+    setPassword("");
+    navigate("/profile");
+  } catch (err) {
+    console.log("handleSubmit error:", err);
+    if (!err?.originalStatus) {
+      // isLoading: true until timeout occurs
+      setErrMsg("No Server Response");
+    } else if (err.originalStatus === 400) {
+      setErrMsg("Missing Username or Password");
+    } else if (err.originalStatus === 401) {
+      setErrMsg("Unauthorized");
+    } else {
+      setErrMsg("Login Failed");
     }
-}
+  }
+};
 
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setErrMsg("");
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setErrMsg("");
+  };
 
   return (
     <>
       <Navbar />
-      {errMsg && <div className="error-message" >{errMsg}</div>}
+      {errMsg && <div className="error-message">{errMsg}</div>}
       {isLoading && <div className="loading-message">Loading...</div>}
       <main className="main bg-dark">
         <section className="sign-in-content">
@@ -75,7 +83,7 @@ useEffect(() => {
                 value={email}
                 type="email"
                 id="username"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => handleEmailChange(e)}
                 ref={userRef}
               />
             </div>
@@ -85,7 +93,7 @@ useEffect(() => {
                 value={password}
                 type="password"
                 id="password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => handlePasswordChange(e)}
               />
             </div>
             <div className="input-remember">
