@@ -32,29 +32,27 @@ const SignIn = () => {
   }, [email, password]);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("handleSubmit called");
+    e.preventDefault();
 
-  try {
-    const userData = await login({ email, password }).unwrap();
-    dispatch(setCredentials({ ...userData, email }));
-    setEmail("");
-    setPassword("");
-    navigate("/profile");
-  } catch (err) {
-    console.log("handleSubmit error:", err);
-    if (!err?.originalStatus) {
-      // isLoading: true until timeout occurs
-      setErrMsg("No Server Response");
-    } else if (err.originalStatus === 400) {
-      setErrMsg("Missing Username or Password");
-    } else if (err.originalStatus === 401) {
-      setErrMsg("Unauthorized");
-    } else {
-      setErrMsg("Login Failed");
+    try {
+      const userData = await login({ email, password }).unwrap();
+      dispatch(setCredentials({ ...userData, email }));
+      setEmail("");
+      setPassword("");
+      navigate("/profile");
+    } catch (err) {
+      if (!err?.originalStatus) {
+        // isLoading: true until timeout occurs
+        setErrMsg("No Server Response");
+      } else if (err.originalStatus === 400) {
+        setErrMsg("Missing Username or Password");
+      } else if (err.originalStatus === 401) {
+        setErrMsg("Unauthorized");
+      } else {
+        setErrMsg("Login Failed");
+      }
     }
-  }
-};
+  };
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);

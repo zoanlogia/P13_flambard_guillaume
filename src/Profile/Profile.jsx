@@ -1,16 +1,12 @@
-
-import { useSelector } from "react-redux";
 import Footer from "../components/Footer/Footer.jsx";
 import Navbar from "../components/Navbar/Navbar.jsx";
-
-
+import { useGetUserProfileQuery } from "../features/auth/authApiSlice.js";
 
 const Profile = () => {
-  
-  const { firstName, lastName } = useSelector((state) => state.auth.user);
-  const fullName = `${firstName} ${lastName}`;
-  console.log(fullName);
 
+  const { data: userProfile, isLoading, isError } = useGetUserProfileQuery();
+
+  
   return (
     <>
       <Navbar />
@@ -20,7 +16,8 @@ const Profile = () => {
             Welcome back
             <br />
             
-            
+            {isLoading ? "Loading..." : `${userProfile?.firstName} ${userProfile?.lastName}`}
+
           </h1>
           <button className="edit-button">Edit Name</button>
         </div>
