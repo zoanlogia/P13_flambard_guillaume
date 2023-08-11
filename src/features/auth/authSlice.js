@@ -4,61 +4,35 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: {
-      email: null,
-      password: null,
-      token: localStorage.getItem("token"),
-
-      firstName: null,
-      lastName: null,
-      isLogged: false,
-    },
+    token: localStorage.getItem("token"),
+    isLogged: false,
+    error: null,
   },
   reducers: {
-    login: (state, action) => {
-      state.user = {
-        ...state.user,
-        ...action.payload,
-        isLogged: true,
-      };
+    loginSuccess: (state, action) => {
+      state.token = action.payload.body.token;
+      state.isAuth = true;
+      state.error = null;
     },
-    updateUserProfile: (state, action) => {
-      state.user = {
-        ...state.user,
-        ...action.payload,
-        isLogged: true,
-      };
+    loginFail: (state, action) => {
+      state.token = null;
+      state.isAuth = false;
+      state.error = action.payload;
     },
-    logout: (state) => {
-      state.user = {
-        email: null,
-        password: null,
-        token: null,
-        firstName: null,
-        lastName: null,
-        isLogged: false,
-      };
+    logoutSuccess: (state) => {
+      state.token = null;
+      state.isAuth = false;
+      state.error = null;
+    },
+    isToken: (state) => {
+      state.isAuth = true;
+    },
+    logoClick: (state) => {
+      state.logoClick = true;
     },
   },
 });
 
-export const createLogin = (email, password) => {
-  return {
-    type: "auth/login",
-    payload: {
-      email: email,
-      password: password,
-    },
-  };
-};
-
-export const updateUserProfile = (profile) => {
-  return {
-    type: "auth/updateUserProfile",
-    payload: profile,
-  };
-};
-
-export const { login, logout } = authSlice.actions;
+export const { loginSuccess, loginFail, logoutSuccess, isToken, logoClick } = authSlice.actions;
 
 export default authSlice.reducer;

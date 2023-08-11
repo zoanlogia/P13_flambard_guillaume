@@ -22,6 +22,9 @@ export const loginAPI = async (email, password) => {
 
       if (!data || !data.body || data.status !== 200) throw new Error (data.status.message)
 
+      const token = data.body.token
+
+      localStorage.setItem('token', token) // On stocke le token dans le localStorage
 
       return data // Return whole response data instead of just the token
       
@@ -36,6 +39,7 @@ export const getProfile = async (token) => {
   const endpoint = "/user/profile";
   const url = urlAPI + endpoint;
 
+  token = localStorage.getItem('token')
   // options du fetch
   const options = {
     method: 'POST', // devrait être un GET mais bon...

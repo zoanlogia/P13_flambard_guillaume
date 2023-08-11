@@ -1,41 +1,51 @@
-// SignIn/SignIn.jsx
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux"; // Importez useDispatch
+import { useDispatch } from "react-redux";
+import { useState } from "react";
+import {  loginAPI } from "../../tools/FetchApi.js";
+import { loginSuccess, loginFail } from "../../features/auth/authSlice.js";
 import { useNavigate } from "react-router-dom";
-import { loginAPI} from "../../tools/FetchApi.js";
-import { createLogin, login } from "../../features/auth/authSlice.js";
 
 const SignIn = () => {
-  const [email, setUserEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [token, setToken] = useState(null);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    if (token) {
-      dispatch(login({email, password, token}));
-      navigate("/profile");
-    }
-  }, [token, dispatch, navigate, email, password]);
-  
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const result = await loginAPI(email, password);
-    if (result) {
-      const token = result;
-      dispatch(createLogin(email, password, token));
+    const userData = await loginAPI(email, password);
+
+    if (userData && userData.body && userData.body.token) {
+      if (rememberMe) {
+        localStorage.setItem("token", userData.body.token);
+      }
+      dispatch(loginSuccess(userData));
+      setEmail("");
+      setPassword("");
       navigate("/profile");
     } else {
-      console.error(result.error);
+      const errorMsg = userData && userData.message ? userData.message : "Authentication failed.";
+      dispatch(loginFail(errorMsg));
+      console.error(errorMsg);
     }
-}
+  };
+
+  const handleUsername = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePassword = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleRememberMe = (e) => {
+    setRememberMe(e.target.checked);
+  };
 
   return (
     <>
@@ -48,29 +58,19 @@ const SignIn = () => {
           <form onSubmit={handleSubmit}>
             <div className="input-wrapper">
               <label htmlFor="username">Username</label>
-              <input
-                value={email}
-                type="email"
-                id="username"
-                onChange={(e) => setUserEmail(e.target.value)}
-              />
+              <input type="email" id="username" onChange={handleUsername} />
             </div>
             <div className="input-wrapper">
               <label htmlFor="password">Password</label>
-              <input
-                value={password}
-                type="password"
-                id="password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <input type="password" id="password" onChange={handlePassword} />
             </div>
             <div className="input-remember">
-              <input type="checkbox" id="remember-me" />
+              <input type="checkbox" id="remember-me" onChange={handleRememberMe} />
               <label htmlFor="remember-me">Remember me</label>
             </div>
 
             <button type="submit" className="sign-in-button">
-              Sign In
+              sign in
             </button>
           </form>
         </section>
