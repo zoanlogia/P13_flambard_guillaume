@@ -1,4 +1,5 @@
 import { createStore } from "redux";
+import produce from "immer";
 
 const initialState = {
   userConnected: false,
@@ -17,7 +18,7 @@ const reducer =(state = initialState, action) => {
     // On ne peut pas se connecter si on est déjà connecté
     if (state.userConnected === false) {
       return { ...state, 
-        userConnected: true, 
+        userConnected: true,
         remerberUser: action.rememberUser,
         token: `${action.token}` };
     } else {

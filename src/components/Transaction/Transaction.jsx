@@ -2,7 +2,6 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 const Transaction = ({ data }) => {
-    console.log(data);
   const [selectedTransaction, setSelectedTransaction] = useState(false);
   const [updateCategory, setUpdateCategory] = useState(false);
   const [updateNotes, setUpdateNotes] = useState(false);
