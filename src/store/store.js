@@ -1,13 +1,37 @@
-// store.js
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/auth/authSlice';
-import userReducer from '../features/auth/userSlice.js';
+import { createStore } from "redux";
 
-const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    user: userReducer,
-  },
-});
+const initialState = {
+  userConnected: false,
+  userFirstname: '',
+  userLastname: '',
+  token: '',
+  remerberUser: false
+};
 
-export default store;
+const reducer =(state = initialState, action) => {
+  if (action.type === "logout") {
+    return initialState;
+  }
+
+  if (action.type === "login") {
+    // On ne peut pas se connecter si on est déjà connecté
+    if (state.userConnected === false) {
+      return { ...state, 
+        userConnected: true, 
+        remerberUser: action.rememberUser,
+        token: `${action.token}` };
+    } else {
+      return state
+    }
+  }
+
+  if (action.type === "setUsername") {
+    return produce (state, (draft) => {
+      draft.userFirstname = action.firstName
+      draft.userLastname = action.lastName
+    })
+  }
+  return state;
+}
+
+export const store = createStore(reducer);

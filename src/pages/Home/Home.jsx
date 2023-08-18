@@ -4,9 +4,17 @@ import Footer from "../../components/Footer/Footer.jsx";
 
 const Home = () => {
 
+const links= [
+  {
+    text: "Sign In",
+    icon:"fa fa-user-circle",
+    link:"/sign-in"
+  }
+]
+
   return (
     <>
-      <Navbar />
+      <Navbar links={links}/>
       <Hero />
       <Footer />
     </>

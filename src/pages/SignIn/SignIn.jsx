@@ -1,71 +1,85 @@
+import { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
-import { useDispatch } from "react-redux";
-import { useState } from "react";
-import {  loginAPI } from "../../tools/FetchApi.js";
-import { loginSuccess, loginFail } from "../../features/auth/authSlice.js";
-import { useNavigate } from "react-router-dom";
+import { validateEmail } from "../../tools/tools.js";
 
 const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [inputEmail, setInputEmail] = useState('');
+  
+  const [inputPassword, setInputPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [inputError, setInputError] = useState(false);
+
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const fetchData = async (e) => {
     e.preventDefault();
-
-    const userData = await loginAPI(email, password);
-
-    if (userData && userData.body && userData.body.token) {
-      if (rememberMe) {
-        localStorage.setItem("token", userData.body.token);
+    setFormSubmitted(true);
+    if (validateEmail(inputEmail) !== false) {
+      const response = await fetch('http://localhost:3001/api/v1/user/login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-Width': 'xmlhttprequest'
+        },
+        body: JSON.stringify({
+          email: inputEmail,
+          password: inputPassword
+        })
+      });
+      if (response.ok) {            
+        const responseData = await response.json();
+        if (responseData.status === 200) {
+          setInputError(false);
+          dispatch({ type: "login", token: responseData.body.token, rememberUser: rememberMe });
+          navigate('/profile', { replace: true });
+        }
+      } else {
+        setInputError(true);
       }
-      dispatch(loginSuccess(userData));
-      setEmail("");
-      setPassword("");
-      navigate("/profile");
-    } else {
-      const errorMsg = userData && userData.message ? userData.message : "Authentication failed.";
-      dispatch(loginFail(errorMsg));
-      console.error(errorMsg);
     }
   };
 
-  const handleUsername = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePassword = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleRememberMe = (e) => {
-    setRememberMe(e.target.checked);
-  };
+  const links= [
+    {
+      text: "Sign In",
+      icon:"fa fa-user-circle",
+      link:"/login"
+    }
+  ]
 
   return (
     <>
-      <Navbar />
+      <Navbar  links={links}/>
       <main className="main bg-dark">
         <section className="sign-in-content">
           <FontAwesomeIcon icon={faUserCircle} className={`sign-in-icon`} />
           <h1>Sign In</h1>
 
-          <form onSubmit={handleSubmit}>
-            <div className="input-wrapper">
+          <form onSubmit={fetchData}>
+          <div className={formSubmitted && validateEmail(inputEmail) === false ? 'input-wrapper inputError' : 'input-wrapper'}>
               <label htmlFor="username">Username</label>
-              <input type="email" id="username" onChange={handleUsername} />
+              <input type="email" id="username" onChange={e => setInputEmail(e.target.value)} />
+              <p className={formSubmitted && validateEmail(inputEmail) === false ? 'invalidMail' : 'hidden'}>Email invalide, veuillez entrer un email valide</p>
+
             </div>
-            <div className="input-wrapper">
+            <div className={formSubmitted && inputError ? 'input-wrapper inputError' : 'input-wrapper'}>
               <label htmlFor="password">Password</label>
-              <input type="password" id="password" onChange={handlePassword} />
+              <input type="password" id="password" onChange={e => setInputPassword(e.target.value)} />
             </div>
+            <p className={formSubmitted && inputError ? 'errorInput' : 'hidden'}>L&apos;email ou le mot de passe n&apos;est pas valide, veuillez entrer un mot de passe et un email valide</p>
+
             <div className="input-remember">
-              <input type="checkbox" id="remember-me" onChange={handleRememberMe} />
+              <input type="checkbox" id="remember-me" onChange={e => setRememberMe(e.target.value)} />
               <label htmlFor="remember-me">Remember me</label>
             </div>
 

@@ -1,28 +1,27 @@
-import argentBankLogo from "../../assets/img/argentBankLogo.png"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons'
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import logo from "../../assets/img/argentBankLogo.png";
 
-const Navbar = () => {
-
+const Nav = ({ links }) => {
   return (
     <nav className="main-nav">
-      <Link className="main-nav-logo" to="/">
+      <a className="main-nav-logo" href="/">
         <img
           className="main-nav-logo-image"
-          src={argentBankLogo}
+          src={logo}
           alt="Argent Bank Logo"
         />
         <h1 className="sr-only">Argent Bank</h1>
-      </Link>
+      </a>
       <div>
-        <Link className="main-nav-item" to={`/sign-in`}>
-          <FontAwesomeIcon icon={faUserCircle} />
-          Sign In
-        </Link>
+        {links.map((link, index) => (
+          <Link className="main-nav-item" to={link.link} key={index}>
+            <i className={link.icon}></i>
+            {link.text}
+          </Link>
+        ))}
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Nav;
