@@ -44,9 +44,9 @@ const Transactions = ({ account }) => {
 
 Transactions.propTypes = {
   account: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    description: PropTypes.string.isRequired
+    title: PropTypes.string,
+    amount: PropTypes.string,
+    description: PropTypes.string
   }).isRequired
 };
 

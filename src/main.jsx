@@ -4,6 +4,7 @@ import "./index.css";
 import Router from "./Router/Router.jsx";
 import { Provider } from "react-redux";
 import {store} from "./store/store.js";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Assurez-vous que c'est le bon chemin
 

@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { validateEmail } from "../../tools/tools.js";
@@ -62,7 +60,7 @@ const Login = () => {
       <Navbar  links={links}/>
       <main className="main bg-dark">
         <section className="sign-in-content">
-          <FontAwesomeIcon icon={faUserCircle} className={`sign-in-icon`} />
+          <i className="fa fa-user-circle sign-in-logo"></i>
           <h1>Sign In</h1>
 
           <form onSubmit={fetchData}>
