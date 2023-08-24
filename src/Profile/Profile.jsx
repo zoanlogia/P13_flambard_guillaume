@@ -1,75 +1,102 @@
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import Footer from "../components/Footer/Footer.jsx";
-import Navbar from "../components/Navbar/Navbar.jsx";
 import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar/Navbar.jsx";
 import Account from "../components/Account/Account.jsx";
+import NameEdit from "../components/forms/NameEdit.jsx";
+import Footer from "../components/Footer/Footer.jsx";
 
-const Profile = ({data}) => {
-  
+const Profile = ({ data }) => {
   const token = useSelector((state) => state.token);
-  const [succeed, setSucceed] = useState(false);
-  const [response, setResponse] = useState(0);
-  const [user, setUser] = useState("");
+  const [userDetails, setUserDetails] = useState({ firstName: "", lastName: "" });
+  const [showEdit, setShowEdit] = useState(false);
+  const [fetchStatus, setFetchStatus] = useState(null);  // null: loading, true: success, false: failed
 
+  const headers = {
+    Accept: "application/json",
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "X-Requested-Width": "xmlhttprequest",
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        "http://localhost:3001/api/v1/user/profile",
-        {
+    (async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/v1/user/profile", {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            "X-Requested-Width": "xmlhttprequest",
-          },
-        }
-      );
+          headers
+        });
 
-      if (response.ok) {            
-        response.json()
-        .then(response => {
-          if (response.status === 200) {
-            console.log(response)
-          setUser(response.body.firstName + " " + response.body.lastName)
-          setSucceed(true)
-          setResponse(0)
-          } 
-        else {
-          setSucceed(false)
-          setResponse(1)
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 200) {
+            setUserDetails({
+              firstName: data.body.firstName,
+              lastName: data.body.lastName
+            });
+            setFetchStatus(true);
+          } else {
+            setFetchStatus(false);
+          }
         }
+      } catch (error) {
+        console.error(error);
+        setFetchStatus(false);
+      }
+    })();
+  });
+
+  const handleNameEditSubmit = async (e) => {
+    e.preventDefault();
+    const [newFirstName, newLastName] = e.target;
+    
+    try {
+      const response = await fetch("http://localhost:3001/api/v1/user/profile", {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({
+          firstName: newFirstName.value,
+          lastName: newLastName.value
         })
-        .catch(error => console.error(error))
-    } 
-    };
-    fetchData();
-  }, [token]);
+      });
 
-  const linksContent= [
-    {
-      text: "Sign Out",
-      icon:"fa fa-sign-out",
-      link:"/"
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 200) {
+          setUserDetails({ firstName: newFirstName.value, lastName: newLastName.value });
+          setShowEdit(false);
+        } else {
+          console.error("Server error during name update");
+        }
+      } else {
+        console.error("HTTP request error during name update");
+      }
+    } catch (error) {
+      console.error("Error sending the request:", error);
     }
-  ]
+  };
 
-
-  if (succeed) {
+  if (fetchStatus) {
     return (
       <>
-        <Navbar links={linksContent} />
+        <Navbar links={[{ text: "Sign Out", icon: "fa fa-sign-out", link: "/" }]} />
         <main className="main bg-dark">
           <div className="header">
-            <h1>
-              Welcome back, {user}
-              <br />
-            </h1>
-            <button className="edit-button">Edit Name</button>
+            <h1>Welcome back,<br />{userDetails.firstName} {userDetails.lastName}</h1>
+            {showEdit ? (
+              <NameEdit
+                firstName={userDetails.firstName}
+                lastName={userDetails.lastName}
+                handleSubmit={handleNameEditSubmit}
+                close={() => setShowEdit(false)}
+              />
+            ) : (
+              <button className="edit-button" onClick={() => setShowEdit(true)}>
+                Edit Name
+              </button>
+            )}
           </div>
           <h2 className="sr-only">Accounts</h2>
-
           {data.map((item, index) => (
             <Account data={item} key={index} />
           ))}
@@ -78,6 +105,12 @@ const Profile = ({data}) => {
       </>
     );
   }
+
+  return "Loading...";
+};
+
+Profile.propTypes = {
+  data: PropTypes.array.isRequired,
 };
 
 export default Profile;

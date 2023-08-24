@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/img/argentBankLogo.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +37,16 @@ const Nav = ({ links }) => {
       </div>
     </nav>
   );
+};
+
+Nav.propTypes = {
+  links: PropTypes.arrayOf(
+    PropTypes.shape({
+      link: PropTypes.string.isRequired,
+      icon: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default Nav;

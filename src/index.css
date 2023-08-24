@@ -268,6 +268,44 @@ body {
   padding: 10px;
 }
 
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 60%;
+  margin: auto;
+}
+
+.purple-button {
+  border-color: rgb(126, 85, 164);
+  background-color: white;
+  color: rgb(126, 85, 164);
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 10px 30px;
+  font-size: medium;
+}
+
+.purple-button:hover {
+  background-color: rgb(126, 85, 164);
+  color: white;
+  transition: 0.3s;
+}
+
+#edit > .input-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: .5em;
+  margin: auto;
+  margin-bottom: .5rem;
+}
+#edit > .button-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: .5em;
+  margin: auto;
+  margin-bottom: .5rem;
+}
+
 .header {
   color: #fff;
   margin-bottom: 2rem;

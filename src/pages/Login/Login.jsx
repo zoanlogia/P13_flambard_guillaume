@@ -7,7 +7,7 @@ import Navbar from "../../components/Navbar/Navbar.jsx";
 import Footer from "../../components/Footer/Footer.jsx";
 import { validateEmail } from "../../tools/tools.js";
 
-const SignIn = () => {
+const Login = () => {
   const [inputEmail, setInputEmail] = useState('');
   
   const [inputPassword, setInputPassword] = useState('');
@@ -94,4 +94,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default Login;

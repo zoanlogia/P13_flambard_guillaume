@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 import Transaction from "../../components/Transaction/Transaction";
@@ -39,6 +40,14 @@ const Transactions = ({ account }) => {
       <Footer />
     </div>
   );
+};
+
+Transactions.propTypes = {
+  account: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    amount: PropTypes.number.isRequired,
+    description: PropTypes.string.isRequired
+  }).isRequired
 };
 
 export default Transactions;

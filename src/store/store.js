@@ -1,5 +1,5 @@
 import { createStore } from "redux";
-import produce from "immer";
+import {produce} from "immer";
 
 const initialState = {
   userConnected: false,
