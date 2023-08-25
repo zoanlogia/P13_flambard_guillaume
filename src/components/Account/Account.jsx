@@ -5,7 +5,7 @@ const Account = ({data}) => {
   const navigate = useNavigate();
 
   const handleClick = (data) => {
-    navigate(`/${data.id}`, { replace: true });
+    navigate(`/${data.id}`);
   };
 
   return (

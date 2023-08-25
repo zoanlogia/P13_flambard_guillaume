@@ -3,22 +3,33 @@ import PropTypes from "prop-types";
 
 const Transaction = ({ data }) => {
   const [selectedTransaction, setSelectedTransaction] = useState(false);
-  const [updateCategory, setUpdateCategory] = useState(false);
-  const [updateNotes, setUpdateNotes] = useState(false);
+  const [editableField, setEditableField] = useState(null); // 'category', 'notes', or null
 
-  const toogleTransaction = () => {
-    setSelectedTransaction(!selectedTransaction);
+  const toggleTransaction = () => {
+    setSelectedTransaction((prevState) => !prevState);
   };
-  const toogleCategory = () => {
-    setUpdateCategory(!updateCategory);
+
+  const toggleEdit = (field) => {
+    if (editableField === field) {
+      setEditableField(null);
+    } else {
+      setEditableField(field);
+    }
   };
-  const toogleNotes = () => {
-    setUpdateNotes(!updateNotes);
+
+  const handleCategoryChange = (e) => {
+    // Update the category. This is just a placeholder.
+    console.log("New category:", e.target.value);
+  };
+
+  const handleNotesChange = (e) => {
+    // Update the notes. This is just a placeholder.
+    console.log("New notes:", e.target.value);
   };
 
   return (
-    <div className="transaction" onClick={toogleTransaction}>
-      <i
+    <div className="transaction">
+      <i onClick={toggleTransaction}
         className={
           selectedTransaction ? "fa fa-chevron-up" : "fa fa-chevron-down"
         }
@@ -40,11 +51,15 @@ const Transaction = ({ data }) => {
         >
           <label htmlFor="category-select">Category:</label>
           <p className="transaction-category">{data.category}</p>
-          <i className="fa fa-pencil" onClick={toogleCategory}></i>
+          <i
+            className="fa fa-pencil"
+            onClick={() => toggleEdit("category")}
+          ></i>
           <select
             name="category"
             id="category-select"
-            className={updateCategory ? "show" : "hidden"}
+            className={editableField === "category" ? "show" : "hidden"}
+            onChange={handleCategoryChange}
           >
             <option value="">--Sélectionnez une catégorie--</option>
             <option value="alimentation">Alimentation</option>
@@ -63,14 +78,15 @@ const Transaction = ({ data }) => {
           <label htmlFor="category">Notes:</label>
           <p className="transaction-notes">{data.notes}</p>
           <i
-            className={updateNotes ? "hidden" : "fa fa-pencil"}
-            onClick={toogleNotes}
+            className={editableField === 'notes' ? "hidden" : "fa fa-pencil"}
+            onClick={() => toggleEdit('notes')}
           ></i>
           <input
             type="text"
-            className={updateNotes ? "show" : "hidden"}
+            className={editableField === 'notes' ? "show" : "hidden"}
             id="notes"
             name="notes"
+            onChange={handleNotesChange}
           />
         </div>
       </div>
@@ -84,15 +100,15 @@ const Transaction = ({ data }) => {
 };
 
 Transaction.propTypes = {
-    data: PropTypes.shape({
-        date: PropTypes.string,
-        type: PropTypes.string,
-        category: PropTypes.string,
-        notes: PropTypes.string,
-        description: PropTypes.string,
-        amount: PropTypes.string,
-        balance: PropTypes.string,
-    }),
+  data: PropTypes.shape({
+    date: PropTypes.string,
+    type: PropTypes.string,
+    category: PropTypes.string,
+    notes: PropTypes.string,
+    description: PropTypes.string,
+    amount: PropTypes.string,
+    balance: PropTypes.string,
+  }),
 };
 
 export default Transaction;
