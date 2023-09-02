@@ -6,7 +6,7 @@ const initialState = {
   userFirstname: '',
   userLastname: '',
   token: '',
-  remerberUser: false
+  rememberUser: false
 };
 
 const reducer =(state = initialState, action) => {
@@ -19,7 +19,7 @@ const reducer =(state = initialState, action) => {
     if (state.userConnected === false) {
       return { ...state, 
         userConnected: true,
-        remerberUser: action.rememberUser,
+        rememberUser: action.rememberUser,
         token: `${action.token}` };
     } else {
       return state

@@ -77,7 +77,7 @@ const Login = () => {
             <p className={formSubmitted && inputError ? 'errorInput' : 'hidden'}>L&apos;email ou le mot de passe n&apos;est pas valide, veuillez entrer un mot de passe et un email valide</p>
 
             <div className="input-remember">
-              <input type="checkbox" id="remember-me" onChange={e => setRememberMe(e.target.value)} />
+              <input type="checkbox" id="remember-me" onChange={e => setRememberMe(e.target.checked)} />
               <label htmlFor="remember-me">Remember me</label>
             </div>
 
